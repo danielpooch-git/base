@@ -4,7 +4,12 @@ on:
   schedule:
     # Alle 15 Minuten. Anpassbar, GitHub erlaubt minimal alle 5 Minuten.
     - cron: "*/15 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_notification:
+        description: "Nur eine ntfy-Testbenachrichtigung senden (kein echter Crawl)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -32,9 +37,11 @@ jobs:
         env:
           NTFY_SERVER: ${{ vars.NTFY_SERVER }}
           NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          CRAWLER_TEST_NOTIFICATION: ${{ inputs.test_notification }}
         run: python crawler.py
 
       - name: Persist crawler state
+        if: ${{ !inputs.test_notification }}
         run: |
           git config user.name "article-sale-crawler-bot"
           git config user.email "actions@users.noreply.github.com"

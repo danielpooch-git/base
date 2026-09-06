@@ -86,7 +86,7 @@ def determine_status(page_text: str, item: dict[str, Any]) -> str:
     return STATUS_UNKNOWN
 
 
-def send_ntfy_notification(ntfy_config: dict[str, Any], item: dict[str, Any]) -> None:
+def send_ntfy_message(ntfy_config: dict[str, Any], title: str, message: str, tags: str) -> None:
     topic = os.environ.get("NTFY_TOPIC")
     if not topic:
         print("  [warn] NTFY_TOPIC ist nicht gesetzt, ueberspringe Benachrichtigung.")
@@ -95,11 +95,10 @@ def send_ntfy_notification(ntfy_config: dict[str, Any], item: dict[str, Any]) ->
     server = os.environ.get("NTFY_SERVER") or ntfy_config.get("server", "https://ntfy.sh")
     url = f"{server.rstrip('/')}/{topic}"
 
-    message = f"{item['name']} ist jetzt verfuegbar!\n{item['url']}"
     headers = {
-        "Title": "Artikel verfuegbar".encode("utf-8"),
+        "Title": title.encode("utf-8"),
         "Priority": "high",
-        "Tags": "shopping_trolley,bell",
+        "Tags": tags,
     }
 
     try:
@@ -115,11 +114,27 @@ def send_ntfy_notification(ntfy_config: dict[str, Any], item: dict[str, Any]) ->
         print(f"  [error] ntfy-Benachrichtigung fehlgeschlagen: {exc}")
 
 
+def send_ntfy_notification(ntfy_config: dict[str, Any], item: dict[str, Any]) -> None:
+    message = f"{item['name']} ist jetzt verfuegbar!\n{item['url']}"
+    send_ntfy_message(ntfy_config, "Artikel verfuegbar", message, "shopping_trolley,bell")
+
+
+def send_test_notification(ntfy_config: dict[str, Any]) -> None:
+    message = "Testbenachrichtigung vom Article-Sale-Crawler. Wenn du das liest, funktioniert die Kette."
+    send_ntfy_message(ntfy_config, "Crawler-Test", message, "white_check_mark")
+
+
 def main() -> int:
     config = load_config()
+    ntfy_config = config.get("ntfy", {})
+
+    if os.environ.get("CRAWLER_TEST_NOTIFICATION", "").lower() in ("1", "true", "yes"):
+        print("Sende Testbenachrichtigung ueber ntfy...")
+        send_test_notification(ntfy_config)
+        return 0
+
     state = load_state()
     items = config.get("items", [])
-    ntfy_config = config.get("ntfy", {})
 
     error_count = 0
 
