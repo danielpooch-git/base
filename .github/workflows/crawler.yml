@@ -1,0 +1,47 @@
+name: Article Sale Crawler
+
+on:
+  schedule:
+    # Alle 15 Minuten. Anpassbar, GitHub erlaubt minimal alle 5 Minuten.
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: article-sale-crawler
+  cancel-in-progress: false
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run crawler
+        env:
+          NTFY_SERVER: ${{ vars.NTFY_SERVER }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python crawler.py
+
+      - name: Persist crawler state
+        run: |
+          git config user.name "article-sale-crawler-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add state.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update crawler state"
+            git push
+          else
+            echo "Kein Statuswechsel, kein Commit noetig."
+          fi

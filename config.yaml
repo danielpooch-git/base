@@ -1,0 +1,37 @@
+# Konfiguration fuer den Article-Sale-Crawler.
+# Jeder Eintrag unter "items" wird bei jedem Lauf abgerufen und auf
+# Verfuegbarkeit geprueft. Trifft ein "unavailable_keyword" im
+# Seitentext, gilt der Artikel als nicht verfuegbar; trifft (ohne
+# vorherigen Treffer eines unavailable_keyword) ein
+# "available_keyword", gilt er als verfuegbar. Beim Wechsel von
+# "nicht verfuegbar" zu "verfuegbar" wird eine Push-Benachrichtigung
+# ueber ntfy.sh verschickt.
+#
+# Optional kann statt der reinen Keyword-Suche ein CSS-Selektor
+# angegeben werden ("selector"), dessen Text dann geprueft wird
+# (praeziser, aber muss ggf. angepasst werden, wenn der Shop sein
+# HTML aendert).
+
+ntfy:
+  server: "https://ntfy.sh"
+  # Der eigentliche Topic-Name wird bewusst NICHT hier eingetragen,
+  # sondern als GitHub Actions Secret "NTFY_TOPIC" hinterlegt, da
+  # jeder, der den Topic-Namen kennt, auf ntfy.sh mitlesen/posten kann.
+
+items:
+  - name: "Batman #1 – Tag Variant von Enrico Marini"
+    url: "https://www.panini.de/shp_deu_de/batman-1-batman-tag-variant-von-enrico-marini-dbtman001v2-de02.html"
+    selector: null
+    available_keywords:
+      - "in den warenkorb"
+      - "jetzt kaufen"
+    unavailable_keywords:
+      - "in kürze verfügbar"
+      - "demnächst verfügbar"
+      - "ausverkauft"
+      - "nicht verfügbar"
+      - "nicht auf lager"
+      - "vorbestellung"
+      - "vorbestellen"
+      - "out of stock"
+      - "benachrichtigen sie mich"
