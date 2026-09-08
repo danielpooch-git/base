@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Meine Termine</title>
+<meta name="description" content="Private und geschäftliche Termine, To-Dos und Arbeitsinfos an einem Ort." />
+<meta name="theme-color" content="#4f46e5" />
+
+<link rel="manifest" href="manifest.json" />
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Termine" />
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img src="icons/icon-192.png" alt="" class="brand-icon" />
+    <span>Meine Termine</span>
+  </div>
+  <button id="installBtn" class="btn ghost hidden" type="button">App installieren</button>
+</header>
+
+<div id="iosHint" class="ios-hint hidden">
+  📲 Auf dem iPhone/iPad: Tippe unten auf <strong>Teilen</strong> → <strong>Zum Home-Bildschirm</strong>, um die App als Icon zu installieren.
+  <button type="button" class="hint-close" aria-label="Schließen">✕</button>
+</div>
+
+<div id="notifyBanner" class="notify-banner hidden">
+  🔔 Erinnerungen sind noch nicht aktiviert.
+  <button id="enableNotify" type="button" class="btn small">Aktivieren</button>
+  <button id="dismissNotify" type="button" class="hint-close" aria-label="Schließen">✕</button>
+</div>
+
+<main id="views">
+
+  <section id="view-heute" class="view active" aria-labelledby="tab-heute">
+    <h1 class="view-title">Heute</h1>
+    <div id="todaySummary" class="today-summary"></div>
+    <div id="todayList" class="card-list"></div>
+  </section>
+
+  <section id="view-termine" class="view" aria-labelledby="tab-termine">
+    <div class="view-header">
+      <h1 class="view-title">Termine</h1>
+      <button class="btn primary" data-open-modal="modal-termin">+ Neu</button>
+    </div>
+    <div class="filter-row">
+      <button class="chip active" data-filter="alle">Alle</button>
+      <button class="chip" data-filter="privat">Privat</button>
+      <button class="chip" data-filter="geschaeftlich">Geschäftlich</button>
+    </div>
+    <div id="terminList" class="card-list"></div>
+  </section>
+
+  <section id="view-todos" class="view" aria-labelledby="tab-todos">
+    <div class="view-header">
+      <h1 class="view-title">To-Dos</h1>
+      <button class="btn primary" data-open-modal="modal-todo">+ Neu</button>
+    </div>
+    <div class="todo-group">
+      <h2 class="group-title">🏠 Privat</h2>
+      <div id="todoListPrivat" class="card-list"></div>
+    </div>
+    <div class="todo-group">
+      <h2 class="group-title">💼 Geschäftlich</h2>
+      <div id="todoListGeschaeftlich" class="card-list"></div>
+    </div>
+  </section>
+
+  <section id="view-infos" class="view" aria-labelledby="tab-infos">
+    <div class="view-header">
+      <h1 class="view-title">Arbeitsinfos</h1>
+      <button class="btn primary" data-open-modal="modal-note">+ Neu</button>
+    </div>
+    <div id="noteList" class="card-list"></div>
+  </section>
+
+</main>
+
+<nav class="tabbar">
+  <button class="tab active" id="tab-heute" data-view="view-heute">
+    <span class="tab-icon">📅</span><span>Heute</span>
+  </button>
+  <button class="tab" id="tab-termine" data-view="view-termine">
+    <span class="tab-icon">🗓️</span><span>Termine</span>
+  </button>
+  <button class="tab" id="tab-todos" data-view="view-todos">
+    <span class="tab-icon">✅</span><span>To-Dos</span>
+  </button>
+  <button class="tab" id="tab-infos" data-view="view-infos">
+    <span class="tab-icon">💼</span><span>Infos</span>
+  </button>
+</nav>
+
+<!-- Modal: Termin -->
+<div class="modal-backdrop" id="modal-termin">
+  <form class="modal" id="formTermin">
+    <div class="modal-header">
+      <h2>Neuer Termin</h2>
+      <button type="button" class="hint-close" data-close-modal>✕</button>
+    </div>
+    <label>Titel
+      <input type="text" name="title" required placeholder="z. B. Zahnarzt" />
+    </label>
+    <div class="row-2">
+      <label>Datum
+        <input type="date" name="date" required />
+      </label>
+      <label>Uhrzeit
+        <input type="time" name="time" />
+      </label>
+    </div>
+    <label>Kategorie
+      <select name="category">
+        <option value="privat">Privat</option>
+        <option value="geschaeftlich">Geschäftlich</option>
+      </select>
+    </label>
+    <label>Erinnerung
+      <select name="reminder">
+        <option value="">Keine</option>
+        <option value="10">10 Minuten vorher</option>
+        <option value="30">30 Minuten vorher</option>
+        <option value="60">1 Stunde vorher</option>
+        <option value="1440">1 Tag vorher</option>
+      </select>
+    </label>
+    <label>Notiz
+      <textarea name="note" rows="2" placeholder="optional"></textarea>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close-modal>Abbrechen</button>
+      <button type="submit" class="btn primary">Speichern</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal: Todo -->
+<div class="modal-backdrop" id="modal-todo">
+  <form class="modal" id="formTodo">
+    <div class="modal-header">
+      <h2>Neue Aufgabe</h2>
+      <button type="button" class="hint-close" data-close-modal>✕</button>
+    </div>
+    <label>Aufgabe
+      <input type="text" name="text" required placeholder="z. B. Angebot verschicken" />
+    </label>
+    <label>Liste
+      <select name="list">
+        <option value="privat">Privat</option>
+        <option value="geschaeftlich">Geschäftlich</option>
+      </select>
+    </label>
+    <label>Fällig am
+      <input type="date" name="due" />
+    </label>
+    <label class="checkbox-row">
+      <input type="checkbox" name="remind" />
+      Erinnerung am Fälligkeitstag (09:00 Uhr)
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close-modal>Abbrechen</button>
+      <button type="submit" class="btn primary">Speichern</button>
+    </div>
+  </form>
+</div>
+
+<!-- Modal: Note -->
+<div class="modal-backdrop" id="modal-note">
+  <form class="modal" id="formNote">
+    <div class="modal-header">
+      <h2>Neue Arbeitsinfo</h2>
+      <button type="button" class="hint-close" data-close-modal>✕</button>
+    </div>
+    <label>Titel
+      <input type="text" name="title" required placeholder="z. B. WLAN-Kunde XY" />
+    </label>
+    <label>Inhalt
+      <textarea name="body" rows="5" placeholder="Details, Kontakte, Zugangsdaten-Hinweise, ..."></textarea>
+    </label>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close-modal>Abbrechen</button>
+      <button type="submit" class="btn primary">Speichern</button>
+    </div>
+  </form>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

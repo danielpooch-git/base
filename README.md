@@ -1,3 +1,31 @@
+## Termine-App
+
+Im Ordner `app/` liegt eine installierbare Web-App ("Termine") für private und
+geschäftliche Termine, To-Do-Listen und Arbeitsinfos – mit echtem App-Icon
+auf dem Startbildschirm.
+
+**Einmalig aktivieren:**
+1. Repo-Settings → **Pages** → unter "Build and deployment" die Quelle
+   **GitHub Actions** auswählen.
+2. Diesen Branch in den Standardbranch mergen (der Deploy-Workflow
+   `deploy-app.yml` läuft auf Pushes gegen den Standardbranch im Pfad `app/`).
+   Danach ist die App unter der von GitHub angezeigten Pages-URL erreichbar.
+3. Seite auf dem Handy öffnen → **Android/Chrome**: Button "App installieren"
+   bzw. Menü → "App installieren". **iPhone/iPad (Safari)**: Teilen-Symbol →
+   "Zum Home-Bildschirm".
+4. In der App oben auf **"Aktivieren"** tippen, um Erinnerungen (Push-artige
+   Benachrichtigungen) zu erlauben.
+
+**Wichtig zu wissen:** Die App speichert alle Daten nur lokal auf dem
+jeweiligen Gerät (kein Server, kein Sync zwischen Geräten). Erinnerungen
+funktionieren zuverlässig, solange die App installiert ist und das Handy sie
+zumindest gelegentlich im Hintergrund aktiv hält bzw. man sie ab und zu
+öffnet – echte Server-Push-Benachrichtigungen wie bei ntfy.sh (siehe unten)
+sind mit reinem GitHub-Pages-Hosting ohne eigenen Backend-Server technisch
+nicht möglich.
+
+---
+
 # Article Sale Crawler
 
 Prüft in regelmäßigen Abständen konfigurierte Produkt-URLs und schickt eine
